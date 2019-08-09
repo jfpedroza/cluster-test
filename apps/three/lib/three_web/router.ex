@@ -5,7 +5,9 @@ defmodule ThreeWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/api", ThreeWeb do
+  scope "/", ThreeWeb do
     pipe_through :api
+
+    get("/", HomeController, :index)
   end
 end
