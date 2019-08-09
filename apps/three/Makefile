@@ -4,10 +4,10 @@ build:
 	docker build -t $(IMAGE_NAME) .
 
 run:
-	mix phx.server
+	elixir --name two@127.0.0.1 -S mix phx.server
 
 iex:
-	iex -S mix phx.server
+	iex --name three@127.0.0.1 -S mix phx.server
 
 docker:
 	docker run --rm -p 6000:6000 $(IMAGE_NAME)
