@@ -1,0 +1,81 @@
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: cluster-test
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cluster-test
+
+  template:
+    metadata:
+      labels:
+        app: cluster-test
+    spec:
+      containers:
+#        - name: one
+          #image: 10.102.57.234/cluster-test/one
+          #env:
+            #- name: ERLANG_COOKIE
+              #value: "dwkdwaijdoaw"
+            #- name: MY_POD_IP
+              #valueFrom:
+                #fieldRef:
+                  #fieldPath: status.podIP
+        #- name: two
+          #image: 10.102.57.234/cluster-test/two
+          #env:
+            #- name: ERLANG_COOKIE
+              #value: "dwkdwaijdoaw"
+            #- name: MY_POD_IP
+              #valueFrom:
+                #fieldRef:
+#                  fieldPath: status.podIP
+        - name: three
+          image: 10.102.57.234/cluster-test/three
+          ports:
+            - containerPort: 6000
+          env:
+            - name: PORT
+              value: "6000"
+            - name: ERLANG_COOKIE
+              value: "dwkdwaijdoaw"
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+
+          command: ["elixir"]
+          args: ["--name", "three@$(MY_POD_IP)", "--cookie", "$(ERLANG_COOKIE)", "--no-halt", "-S", "mix", "phx.server"]
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: cluster-nodes
+  namespace: default
+spec:
+  clusterIP: None
+  selector:
+    app: cluster-test
+  ports:
+    - name: epmd
+      port: 4369
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: cluster-test
+  namespace: default
+spec:
+  type: LoadBalancer
+  selector:
+    app: cluster-test
+  ports:
+    - name: http
+      port: 6000
+      targetPort: 6000
