@@ -2,38 +2,83 @@
 kind: Deployment
 apiVersion: apps/v1
 metadata:
-  name: cluster-test
+  name: cluster-test-one
   namespace: default
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: cluster-test
+      app: cluster-test-one
 
   template:
     metadata:
       labels:
-        app: cluster-test
+        project: cluster-test
+        app: cluster-test-one
     spec:
       containers:
-#        - name: one
-          #image: 10.102.57.234/cluster-test/one
-          #env:
-            #- name: ERLANG_COOKIE
-              #value: "dwkdwaijdoaw"
-            #- name: MY_POD_IP
-              #valueFrom:
-                #fieldRef:
-                  #fieldPath: status.podIP
-        #- name: two
-          #image: 10.102.57.234/cluster-test/two
-          #env:
-            #- name: ERLANG_COOKIE
-              #value: "dwkdwaijdoaw"
-            #- name: MY_POD_IP
-              #valueFrom:
-                #fieldRef:
-#                  fieldPath: status.podIP
+        - name: one
+          image: 10.102.57.234/cluster-test/one
+          env:
+            - name: ERLANG_COOKIE
+              value: "dwkdwaijdoaw"
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+          command: ["elixir"]
+          args: ["--name", "one@$(MY_POD_IP)", "--cookie", "$(ERLANG_COOKIE)", "--no-halt", "-S", "mix", "run"]
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: cluster-test-two
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cluster-test-two
+
+  template:
+    metadata:
+      labels:
+        project: cluster-test
+        app: cluster-test-two
+    spec:
+      containers:
+        - name: two
+          image: 10.102.57.234/cluster-test/one
+          env:
+            - name: ERLANG_COOKIE
+              value: "dwkdwaijdoaw"
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+          command: ["elixir"]
+          args: ["--name", "two@$(MY_POD_IP)", "--cookie", "$(ERLANG_COOKIE)", "--no-halt", "-S", "mix", "run"]
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: cluster-test-three
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cluster-test-three
+
+  template:
+    metadata:
+      labels:
+        project: cluster-test
+        app: cluster-test-three
+    spec:
+      containers:
         - name: three
           image: 10.102.57.234/cluster-test/three
           ports:
@@ -60,7 +105,7 @@ metadata:
 spec:
   clusterIP: None
   selector:
-    app: cluster-test
+    project: cluster-test
   ports:
     - name: epmd
       port: 4369
@@ -69,12 +114,12 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: cluster-test
+  name: cluster-test-lb
   namespace: default
 spec:
   type: LoadBalancer
   selector:
-    app: cluster-test
+    app: cluster-test-three
   ports:
     - name: http
       port: 6000
