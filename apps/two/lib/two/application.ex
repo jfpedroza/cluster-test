@@ -8,11 +8,7 @@ defmodule Two.Application do
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
 
-    topologies = [
-      numbers: [
-        strategy: Cluster.Strategy.Gossip
-      ]
-    ]
+    topologies = Application.get_env(:two, :topologies)
 
     children = [
       {Cluster.Supervisor, [topologies, [name: Two.ClusterSupervisor]]}

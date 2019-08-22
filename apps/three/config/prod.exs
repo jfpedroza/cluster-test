@@ -16,6 +16,22 @@ config :three, ThreeWeb.Endpoint,
 # Do not print debug messages in production
 config :logger, level: :info
 
+config :three,
+  topologies: [
+    one: [
+      strategy: Cluster.Strategy.Kubernetes.DNS,
+      config: [service: "cluster-nodes", application_name: "one"]
+    ],
+    two: [
+      strategy: Cluster.Strategy.Kubernetes.DNS,
+      config: [service: "cluster-nodes", application_name: "two"]
+    ],
+    three: [
+      strategy: Cluster.Strategy.Kubernetes.DNS,
+      config: [service: "cluster-nodes", application_name: "three"]
+    ]
+  ]
+
 # ## SSL Support
 #
 # To get SSL working, you will need to add the `https` key
