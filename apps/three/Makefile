@@ -1,7 +1,10 @@
 IMAGE_NAME = cluster-test/three
 
 build:
-	docker build -t $(IMAGE_NAME) .
+	docker build -t $(REGISTRY_IP)/$(IMAGE_NAME) .
+
+push:
+	docker push $(REGISTRY_IP)/$(IMAGE_NAME)
 
 run:
 	elixir --name two@127.0.0.1 -S mix phx.server
