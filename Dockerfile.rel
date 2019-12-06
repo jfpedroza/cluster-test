@@ -1,0 +1,38 @@
+FROM bitwalker/alpine-elixir-phoenix:1.9.0 AS builder
+
+ARG APP_NAME=cluster_test
+ARG MIX_ENV=prod
+
+ENV APP_NAME=${APP_NAME} \
+    MIX_ENV=${MIX_ENV}
+
+WORKDIR /opt/app
+
+# Cache elixir deps
+ADD mix.exs mix.lock ./
+RUN mix do deps.get, deps.compile
+
+ADD . .
+
+RUN mix compile
+
+RUN \
+  mix release && \
+  cp -r _build/${MIX_ENV}/rel/${APP_NAME} /opt/built/
+
+FROM alpine:3.9
+
+ARG APP_NAME=cluster_test
+
+RUN apk update && \
+    apk add --no-cache \
+      bash \
+      openssl-dev
+
+ENV APP_NAME=${APP_NAME}
+
+WORKDIR /opt/app
+
+COPY --from=builder /opt/built .
+
+CMD /opt/app/bin/${APP_NAME} start

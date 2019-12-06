@@ -76,7 +76,7 @@ export REGISTRY_IP=$(kubectl -n kube-system get svc registry -o jsonpath="{.spec
 # Build and pushing the images
 make build push
 
-# Replace the registry IP in the deployment file
+# Replace the registry IP in the deployment file (I still don't know how to fix this)
 sed -i "s/10.102.57.234/$REGISTRY_IP/" deployment.yaml
 
 # Create and run the deployments and services
@@ -87,7 +87,7 @@ kubectl create -f deployment.yaml
 #### Verifying it works
 
 ```bash
-# The deployments were created 
+# The deployments were created
 kubectl get deployments
 
 NAME                 READY   UP-TO-DATE   AVAILABLE   AGE

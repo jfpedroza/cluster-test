@@ -18,16 +18,16 @@ spec:
     spec:
       containers:
         - name: one
-          image: 10.102.57.234/cluster-test/one
+          image: 10.102.57.234/cluster-test/one-rel
           env:
-            - name: ERLANG_COOKIE
+            - name: RELEASE_COOKIE
               value: "dwkdwaijdoaw"
-            - name: MY_POD_IP
+            - name: RELEASE_HOST
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-          command: ["elixir"]
-          args: ["--name", "one@$(MY_POD_IP)", "--cookie", "$(ERLANG_COOKIE)", "--no-halt", "-S", "mix", "run"]
+          command: ["/opt/app/bin/one"]
+          args: ["start"]
 
 ---
 kind: Deployment
@@ -49,16 +49,16 @@ spec:
     spec:
       containers:
         - name: two
-          image: 10.102.57.234/cluster-test/one
+          image: 10.102.57.234/cluster-test/two-rel
           env:
-            - name: ERLANG_COOKIE
+            - name: RELEASE_COOKIE
               value: "dwkdwaijdoaw"
-            - name: MY_POD_IP
+            - name: RELEASE_HOST
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-          command: ["elixir"]
-          args: ["--name", "two@$(MY_POD_IP)", "--cookie", "$(ERLANG_COOKIE)", "--no-halt", "-S", "mix", "run"]
+          command: ["/opt/app/bin/two"]
+          args: ["start"]
 
 ---
 kind: Deployment
@@ -80,21 +80,20 @@ spec:
     spec:
       containers:
         - name: three
-          image: 10.102.57.234/cluster-test/three
+          image: 10.102.57.234/cluster-test/three-rel
           ports:
             - containerPort: 6000
           env:
             - name: PORT
               value: "6000"
-            - name: ERLANG_COOKIE
+            - name: RELEASE_COOKIE
               value: "dwkdwaijdoaw"
-            - name: MY_POD_IP
+            - name: RELEASE_HOST
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-
-          command: ["elixir"]
-          args: ["--name", "three@$(MY_POD_IP)", "--cookie", "$(ERLANG_COOKIE)", "--no-halt", "-S", "mix", "phx.server"]
+          command: ["/opt/app/bin/three"]
+          args: ["start"]
 
 ---
 kind: Service

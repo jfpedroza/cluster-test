@@ -1,17 +1,17 @@
-use Mix.Config
+import Config
 
 config :one,
   topologies: [
     one: [
       strategy: Cluster.Strategy.Kubernetes.DNS,
-      config: [service: "cluster-nodes", application_name: "one"]
+      config: [service: "cluster-nodes-one", application_name: "one"]
     ],
     two: [
       strategy: Cluster.Strategy.Kubernetes.DNS,
-      config: [service: "cluster-nodes", application_name: "two"]
+      config: [service: "cluster-nodes-two", application_name: "two"]
     ],
     three: [
       strategy: Cluster.Strategy.Kubernetes.DNS,
-      config: [service: "cluster-nodes", application_name: "three"]
+      config: [service: "cluster-nodes-three", application_name: "three"]
     ]
   ]
