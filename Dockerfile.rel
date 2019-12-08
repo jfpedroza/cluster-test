@@ -4,7 +4,18 @@ ARG APP_NAME
 ARG MIX_ENV=prod
 
 ENV APP_NAME=${APP_NAME} \
-    MIX_ENV=${MIX_ENV}
+    MIX_ENV=${MIX_ENV} \
+    CONSUL_VERSION=1.6.2
+
+RUN apk update && \
+    apk add --no-cache \
+      wget \
+      unzip
+
+RUN wget -nv -O /tmp/consul.zip "https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip" \
+  && unzip -d /bin /tmp/consul.zip \
+  && chmod 755 /bin/consul \
+  && rm /tmp/consul.zip
 
 WORKDIR /opt/app
 
@@ -21,6 +32,8 @@ RUN \
   cp -r _build/${MIX_ENV}/rel/${APP_NAME} /opt/built/
 
 FROM alpine:3.9
+
+COPY --from=builder /bin/consul /bin/consul
 
 ARG APP_NAME
 
