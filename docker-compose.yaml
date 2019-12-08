@@ -1,0 +1,20 @@
+version: '3.7'
+
+services:
+  one:
+    image: cluster-test/one
+    environment:
+      RELEASE_COOKIE: wdedwdsf
+      CLUSTER_STRATEGY: gossip
+  two:
+    image: cluster-test/two
+    environment:
+      RELEASE_COOKIE: wdedwdsf
+      CLUSTER_STRATEGY: gossip
+  three:
+    image: cluster-test/three
+    environment:
+      RELEASE_COOKIE: wdedwdsf
+      CLUSTER_STRATEGY: gossip
+    ports:
+      - 6000:4000

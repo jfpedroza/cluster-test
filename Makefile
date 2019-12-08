@@ -1,24 +1,16 @@
-build:
-	cd apps/one; make build
-	cd apps/two; make build
-	cd apps/three; make build
+default: build
 
-build-rel:
-	cd apps/one; make build-rel
-	cd apps/two; make build-rel
-	cd apps/three; make build-rel
+build-%:
+	cd apps/$*; make build
 
-push:
-	cd apps/one; make push
-	cd apps/two; make push
-	cd apps/three; make push
+build: build-one build-two build-three
 
-push-rel:
-	cd apps/one; make push-rel
-	cd apps/two; make push-rel
-	cd apps/three; make push-rel
+push-%:
+	cd apps/$*; make push
 
-deps:
-	cd apps/one; mix do deps.get, deps.compile
-	cd apps/two; mix do deps.get, deps.compile
-	cd apps/three; mix do deps.get, deps.compile
+push: push-one push-two push-three
+
+deps-%:
+	cd apps/$*; mix do deps.get, deps.compile
+
+deps: deps-one deps-two deps-three

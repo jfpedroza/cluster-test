@@ -14,22 +14,6 @@ config :three, ThreeWeb.Endpoint, url: [host: "example.com", port: 80]
 # Do not print debug messages in production
 config :logger, level: :info
 
-config :three,
-  topologies: [
-    one: [
-      strategy: Cluster.Strategy.Kubernetes.DNS,
-      config: [service: "cluster-nodes-one", application_name: "one"]
-    ],
-    two: [
-      strategy: Cluster.Strategy.Kubernetes.DNS,
-      config: [service: "cluster-nodes-two", application_name: "two"]
-    ],
-    three: [
-      strategy: Cluster.Strategy.Kubernetes.DNS,
-      config: [service: "cluster-nodes-three", application_name: "three"]
-    ]
-  ]
-
 # ## SSL Support
 #
 # To get SSL working, you will need to add the `https` key

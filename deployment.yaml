@@ -20,14 +20,14 @@ spec:
         - name: one
           image: 10.102.57.234/cluster-test/one
           env:
-            - name: ERLANG_COOKIE
+            - name: RELEASE_COOKIE
               value: "dwkdwaijdoaw"
-            - name: MY_POD_IP
+            - name: RELEASE_HOST
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-          command: ["elixir"]
-          args: ["--name", "one@$(MY_POD_IP)", "--cookie", "$(ERLANG_COOKIE)", "--no-halt", "-S", "mix", "run"]
+            - name: CLUSTER_STRATEGY
+              value: "kubernetes_dns"
 
 ---
 kind: Deployment
@@ -49,16 +49,16 @@ spec:
     spec:
       containers:
         - name: two
-          image: 10.102.57.234/cluster-test/one
+          image: 10.102.57.234/cluster-test/two
           env:
-            - name: ERLANG_COOKIE
+            - name: RELEASE_COOKIE
               value: "dwkdwaijdoaw"
-            - name: MY_POD_IP
+            - name: RELEASE_HOST
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-          command: ["elixir"]
-          args: ["--name", "two@$(MY_POD_IP)", "--cookie", "$(ERLANG_COOKIE)", "--no-halt", "-S", "mix", "run"]
+            - name: CLUSTER_STRATEGY
+              value: "kubernetes_dns"
 
 ---
 kind: Deployment
@@ -86,15 +86,14 @@ spec:
           env:
             - name: PORT
               value: "6000"
-            - name: ERLANG_COOKIE
+            - name: RELEASE_COOKIE
               value: "dwkdwaijdoaw"
-            - name: MY_POD_IP
+            - name: RELEASE_HOST
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-
-          command: ["elixir"]
-          args: ["--name", "three@$(MY_POD_IP)", "--cookie", "$(ERLANG_COOKIE)", "--no-halt", "-S", "mix", "phx.server"]
+            - name: CLUSTER_STRATEGY
+              value: "kubernetes_dns"
 
 ---
 kind: Service
