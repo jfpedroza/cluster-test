@@ -26,6 +26,22 @@ topologies =
           config: [service: "cluster-nodes-three", application_name: "three"]
         ]
       ]
+
+    "consul" ->
+      [
+        one: [
+          strategy: ClusterConsul.Strategy,
+          config: [service_name: "cluster-one", application_name: "one", register: true]
+        ],
+        two: [
+          strategy: ClusterConsul.Strategy,
+          config: [service_name: "cluster-two", application_name: "two"]
+        ],
+        three: [
+          strategy: ClusterConsul.Strategy,
+          config: [service_name: "cluster-three", application_name: "three"]
+        ]
+      ]
   end
 
 config :one, topologies: topologies

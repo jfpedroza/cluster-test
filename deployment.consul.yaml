@@ -1,0 +1,173 @@
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: cluster-test-one
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cluster-test-one
+
+  template:
+    metadata:
+      labels:
+        project: cluster-test
+        app: cluster-test-one
+    spec:
+      containers:
+        - name: one
+          image: 10.102.57.234/cluster-test/one
+          env:
+            - name: RELEASE_COOKIE
+              value: "dwkdwaijdoaw"
+            - name: RELEASE_HOST
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: CLUSTER_STRATEGY
+              value: "consul"
+            - name: CONSUL_SERVER
+              value: "cluster-consul"
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: cluster-test-two
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cluster-test-two
+
+  template:
+    metadata:
+      labels:
+        project: cluster-test
+        app: cluster-test-two
+    spec:
+      containers:
+        - name: two
+          image: 10.102.57.234/cluster-test/two
+          env:
+            - name: RELEASE_COOKIE
+              value: "dwkdwaijdoaw"
+            - name: RELEASE_HOST
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: CLUSTER_STRATEGY
+              value: "consul"
+            - name: CONSUL_SERVER
+              value: "cluster-consul"
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: cluster-test-three
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cluster-test-three
+
+  template:
+    metadata:
+      labels:
+        project: cluster-test
+        app: cluster-test-three
+    spec:
+      containers:
+        - name: three
+          image: 10.102.57.234/cluster-test/three
+          ports:
+            - containerPort: 6000
+          env:
+            - name: PORT
+              value: "6000"
+            - name: RELEASE_COOKIE
+              value: "dwkdwaijdoaw"
+            - name: RELEASE_HOST
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: CLUSTER_STRATEGY
+              value: "consul"
+            - name: CONSUL_SERVER
+              value: "cluster-consul"
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: cluster-consul-server
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: cluster-consul-server
+
+  template:
+    metadata:
+      labels:
+        app: cluster-consul-server
+    spec:
+      containers:
+        - name: consul-server
+          image: consul:1.6.2
+          ports:
+            - containerPort: 8500
+            - containerPort: 8300
+          command: ["consul"]
+          args: ["agent", "-server", "-ui", "-bind", "0.0.0.0", "-client", "0.0.0.0", "-bootstrap-expect=1", "-data-dir", "/consul/data"]
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: cluster-consul
+  namespace: default
+spec:
+  clusterIP: None
+  selector:
+    app: cluster-consul-server
+  ports:
+    - name: http
+      port: 8500
+    - name: internal
+      port: 8300
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: cluster-consul-lb
+  namespace: default
+spec:
+  type: LoadBalancer
+  selector:
+    app: cluster-consul-server
+  ports:
+    - name: http
+      port: 8500
+      targetPort: 8500
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: cluster-test-lb
+  namespace: default
+spec:
+  type: LoadBalancer
+  selector:
+    app: cluster-test-three
+  ports:
+    - name: http
+      port: 6000
+      targetPort: 6000

@@ -37,7 +37,8 @@ defmodule Three.MixProject do
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
-      {:libcluster, "~> 3.1"}
+      {:libcluster, "~> 3.1"},
+      {:libcluster_consul, github: "johnf9896/libcluster_consul"}
     ]
   end
 end

@@ -3,7 +3,7 @@ version: '3.7'
 services:
   consul:
     command: agent -server -ui -bind 0.0.0.0 -client 0.0.0.0 -bootstrap-expect=1
-    image: consul:latest
+    image: consul:1.6.2
     ports:
       - "9300:8300"
       - "9500:8500"
@@ -12,19 +12,25 @@ services:
     image: cluster-test/one
     environment:
       RELEASE_COOKIE: wdedwdsf
-      CLUSTER_STRATEGY: gossip
+      CLUSTER_STRATEGY: consul
       CONSUL_SERVER: consul
+    depends_on:
+      - consul
   two:
     image: cluster-test/two
     environment:
       RELEASE_COOKIE: wdedwdsf
-      CLUSTER_STRATEGY: gossip
+      CLUSTER_STRATEGY: consul
       CONSUL_SERVER: consul
+    depends_on:
+      - consul
   three:
     image: cluster-test/three
     environment:
       RELEASE_COOKIE: wdedwdsf
-      CLUSTER_STRATEGY: gossip
+      CLUSTER_STRATEGY: consul
       CONSUL_SERVER: consul
+    depends_on:
+      - consul
     ports:
       - 6000:4000
