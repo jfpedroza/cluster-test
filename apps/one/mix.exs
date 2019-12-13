@@ -24,7 +24,8 @@ defmodule One.MixProject do
     [
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
-      {:libcluster, "~> 3.1"}
+      {:libcluster, "~> 3.1"},
+      {:horde, "~> 0.7.0"}
     ]
   end
 end
